@@ -287,7 +287,8 @@ class ZoomImageView extends android.widget.ImageView {
     }
 
     public onTouchEvent(event: android.view.MotionEvent): boolean {       
-        if (this._host.allowZoom) {
+        const owner = this._owner.get();
+        if (owner.allowZoom) {
             switch (event.getActionMasked()) {
                 case android.view.MotionEvent.ACTION_DOWN:
                     this._mode = MODE_DRAG;
@@ -382,7 +383,6 @@ class ZoomImageView extends android.widget.ImageView {
             }
         }
 
-        const owner = this._owner.get();
         for (const gestureType of ALL_GESTURE_TYPES) {
             for (const observer of owner.getGestureObservers(gestureType) || []) {
                 observer.androidOnTouchEvent(event);
