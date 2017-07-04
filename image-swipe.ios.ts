@@ -218,15 +218,17 @@ export class ImageSwipe extends ImageSwipeBase {
 
         zoomScrollView.delegate = UIScrollViewZoomDelegateImpl.initWithOwnerAndZoomView(new WeakRef(this), new WeakRef(imageView));
 
-        activityIndicator = UIActivityIndicatorView.alloc().init();
-        activityIndicator.autoresizingMask = UIViewAutoresizing.FlexibleWidth | UIViewAutoresizing.FlexibleHeight;
-        activityIndicator.hidesWhenStopped = true;
+        if (this.showActivityIndicator) {
+            activityIndicator = UIActivityIndicatorView.alloc().init();
+            activityIndicator.autoresizingMask = UIViewAutoresizing.FlexibleWidth | UIViewAutoresizing.FlexibleHeight;
+            activityIndicator.hidesWhenStopped = true;
+            view.addSubview(activityIndicator);
+        }
 
         zoomScrollView.addSubview(imageView);
-        view.addSubview(activityIndicator);
         view.addSubview(zoomScrollView);
-
         scrollView.addSubview(view);
+
         this._views[page] = {
             view,
             imageView,
@@ -235,17 +237,23 @@ export class ImageSwipe extends ImageSwipeBase {
 
         this._resizeNativeViews(page);
 
-        activityIndicator.startAnimating();
+        if (activityIndicator) {
+            activityIndicator.startAnimating();
+        }
 
         image = this._imageAccessor.getImage(imageUrl);
         if (image) {
             this._prepareImageView(image, imageView);
-            activityIndicator.stopAnimating();
+            if (activityIndicator) {
+                activityIndicator.stopAnimating();
+            }
         }
         else {
             this._imageAccessor.loadImage(imageUrl, (imageSource: UIImage) => {
                 this._prepareImageView(imageSource, imageView);
-                activityIndicator.stopAnimating();
+                if (activityIndicator) {
+                    activityIndicator.stopAnimating();
+                }
             });
         }
     }

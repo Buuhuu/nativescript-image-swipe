@@ -54,6 +54,7 @@ export abstract class ImageSwipeBase extends ScrollView implements ImageSwipeDef
     public isItemsSourceIn: boolean;
     public allowZoom: boolean;
     public imageAccessor: ImageAccessor;
+    public showActivityIndicator: boolean;
 
     constructor() {
         super();
@@ -134,3 +135,9 @@ export const loadImageProperty = new Property<ImageSwipeBase, ImageAccessor>({
     defaultValue: null
 });
 loadImageProperty.register(ImageSwipeBase);
+
+export const showActivityIndiciator = new Property<ImageSwipeBase, boolean>({
+    name: "showActivityIndicator",
+    defaultValue: true
+});
+showActivityIndiciator.register(ImageSwipeBase);

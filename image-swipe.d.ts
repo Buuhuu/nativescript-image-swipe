@@ -36,6 +36,7 @@ export class ImageSwipe extends ScrollView {
     public pageNumber: number;
     public allowZoom: boolean;
     public imageAccessor: ImageAccessor;
+    public showActivityIndicator: boolean;
 
     public ios: any; /* UIScrollView */
     public android: any; /* android.support.v4.view.ViewPager */
@@ -54,3 +55,5 @@ export const allowZoomProperty: Property<ImageSwipe, boolean>;
 export const pageNumberProperty: CoercibleProperty<ImageSwipe, number>;
 export const itemsProperty: Property<ImageSwipe, any[] | ItemsSource>;
 export const imageUrlPropertyProperty: Property<ImageSwipe, string>;
+export const loadImageProperty: Property<ImageSwipe, ImageAccessor>;
+export const showActivityIndiciator: Property<ImageSwipe, boolean>;
