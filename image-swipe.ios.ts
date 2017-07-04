@@ -237,19 +237,15 @@ export class ImageSwipe extends ImageSwipeBase {
 
         activityIndicator.startAnimating();
 
-        image = ImageSwipeBase._imageCache.get(imageUrl);
+        image = this._imageAccessor.getImage(imageUrl);
         if (image) {
             this._prepareImageView(image, imageView);
             activityIndicator.stopAnimating();
         }
         else {
-            ImageSwipeBase._imageCache.push({
-                key: imageUrl,
-                url: imageUrl,
-                completed: (imageSource) => {
-                    this._prepareImageView(imageSource, imageView);
-                    activityIndicator.stopAnimating();
-                }
+            this._imageAccessor.loadImage(imageUrl, (imageSource: UIImage) => {
+                this._prepareImageView(imageSource, imageView);
+                activityIndicator.stopAnimating();
             });
         }
     }
@@ -290,6 +286,10 @@ export class ImageSwipe extends ImageSwipeBase {
 
         const pageView = this._views[page];
         if (pageView) {
+            pageView.imageView.image = null; // otherwise remove from super view might release the image, which 
+                                             // might be retrieved from a shared ImageCache instance across
+                                             // the entire application. This causes then a call of an already
+                                             // release instance from the ImageCache's MemmoryWarningHandler.
             pageView.view.removeFromSuperview();
         }
 

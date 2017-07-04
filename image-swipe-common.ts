@@ -17,27 +17,57 @@ import { CoercibleProperty, Property } from "ui/core/view";
 import { Cache } from "ui/image-cache";
 import { ItemsSource } from "ui/list-picker";
 import { ScrollView } from "ui/scroll-view";
-import { ImageSwipe as ImageSwipeDefinition } from ".";
+import { ImageAccessor, ImageSwipe as ImageSwipeDefinition } from ".";
 
 export * from "ui/scroll-view";
 
+class DefaultImageAccessor implements ImageAccessor {
+    private static _imageCacheInstance: Cache;
+    
+    constructor() {
+        if (!DefaultImageAccessor._imageCacheInstance) {
+            DefaultImageAccessor._imageCacheInstance = new Cache();
+            DefaultImageAccessor._imageCacheInstance.maxRequests = 3;
+        }    
+    }
+
+    public getImage(imageUrl: string): any {
+        return DefaultImageAccessor._imageCacheInstance.get(imageUrl);
+    }
+
+    public loadImage(imageUrl: string, callback: (image: any) => void): void {
+        DefaultImageAccessor._imageCacheInstance.push({
+            url: imageUrl,
+            key: imageUrl,
+            completed: callback
+        });
+    }    
+}
+
 export abstract class ImageSwipeBase extends ScrollView implements ImageSwipeDefinition {
     public static pageChangedEvent: string = "pageChanged";
-
-    public static _imageCache: Cache;
-
+    private static _defaultImageAccessor: ImageAccessor;
+    
     public items: any[] | ItemsSource;
     public pageNumber: number;
     public imageUrlProperty: string;
     public isItemsSourceIn: boolean;
     public allowZoom: boolean;
+    public imageAccessor: ImageAccessor;
 
     constructor() {
         super();
-        if (!ImageSwipeBase._imageCache) {
-            ImageSwipeBase._imageCache = new Cache();
-            ImageSwipeBase._imageCache.maxRequests = 3;
-        }    
+    }
+
+    public get _imageAccessor(): ImageAccessor {
+        if (this.imageAccessor) {
+            return this.imageAccessor;
+        } 
+        if (!ImageSwipeBase._defaultImageAccessor) {
+            ImageSwipeBase._defaultImageAccessor = new DefaultImageAccessor();
+        }
+
+        return ImageSwipeBase._defaultImageAccessor;
     }
 
     public _getDataItem(index: number): any {
@@ -98,3 +128,9 @@ export const allowZoomProperty = new Property<ImageSwipeBase, boolean>({
     defaultValue: true
 });
 allowZoomProperty.register(ImageSwipeBase);
+
+export const loadImageProperty = new Property<ImageSwipeBase, ImageAccessor>({
+    name: "imageAccessor",
+    defaultValue: null
+});
+loadImageProperty.register(ImageSwipeBase);

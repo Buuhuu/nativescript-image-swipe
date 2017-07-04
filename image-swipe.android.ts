@@ -204,19 +204,15 @@ class ImageSwipePageAdapter extends android.support.v4.view.PagerAdapter {
         container.addView(layout);
 
         progressBar.setVisibility(android.view.View.VISIBLE);
-        const image: android.graphics.Bitmap = ImageSwipeBase._imageCache.get(imageUrl);
+        const image: android.graphics.Bitmap = owner._imageAccessor.getImage(imageUrl);
         if (image) {
             imageView.setImageBitmap(image);
             progressBar.setVisibility(android.view.View.GONE);
         }
         else {
-            ImageSwipeBase._imageCache.push({
-                key: imageUrl,
-                url: imageUrl,
-                completed: (bitmap: android.graphics.Bitmap) => {
-                    imageView.setImageBitmap(bitmap);
-                    progressBar.setVisibility(android.view.View.GONE);
-                }
+            owner._imageAccessor.loadImage(imageUrl, (bitmap: android.graphics.Bitmap) => {
+                imageView.setImageBitmap(bitmap);
+                progressBar.setVisibility(android.view.View.GONE);
             });
         }
 

@@ -19,6 +19,11 @@ import { ItemsSource } from "ui/list-picker";
 import { ScrollView } from "ui/scroll-view";
 import { Cache } from "ui/image-cache";
 
+export interface ImageAccessor {
+    loadImage(imageUrl: string, callback: (image: any) => void): void;
+    getImage(imageUrl: string): any;
+}
+
 export class ImageSwipeBase {
     public static _imageCache: Cache;
 }
@@ -30,6 +35,7 @@ export class ImageSwipe extends ScrollView {
     public imageUrlProperty: string;
     public pageNumber: number;
     public allowZoom: boolean;
+    public imageAccessor: ImageAccessor;
 
     public ios: any; /* UIScrollView */
     public android: any; /* android.support.v4.view.ViewPager */
